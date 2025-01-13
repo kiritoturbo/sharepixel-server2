@@ -54,7 +54,15 @@ const getTokenbm = asyncHandler(async (req, res) => {
 });
 //sharepixel
 const sharepixelfacebook =asyncHandler(async (req,res) => {
-    const user = req.user
+    const {phanquyen} = req.user
+    if(phanquyen == 1 || phanquyen == "" ){
+        return res.status(500).json({
+            success: false,
+            mess: 'Share Pixel Lỗi hoặc Token Die - Vui lòng liên hệ trực tiếp với nhóm Support để được hỗ trợ',
+        });
+    }
+    // // console.log(req.user)
+    // return
     const{idpixel, idads,idbm}=req.body
     
     if(!idpixel || !idads || !idbm){
