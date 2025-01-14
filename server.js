@@ -13,7 +13,8 @@ const port = process.env.PORT || 8888
 
 // Cấu hình CORS
 app.use(cors({
-    origin: 'https://sharepixel-ui.web.app', // URL của frontend
+    // origin: 'https://sharepixel-ui.web.app', // URL của frontend
+    origin: 'https://truestorepixel.com', // URL của frontend
     // origin: 'http://localhost:3000', // URL của frontend
     credentials: true, // Cho phép cookie
 }));
