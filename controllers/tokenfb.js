@@ -168,6 +168,7 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
 
 // get lịch sử sharepixel
 const getAllHistorySharePixel = asyncHandler(async (req, res) => {
+    const user = req.user
     try {
         const historyRecords = await historysharepixel.find({ user_id: user.id }); // Lấy tất cả các bản ghi từ MongoDB
 
