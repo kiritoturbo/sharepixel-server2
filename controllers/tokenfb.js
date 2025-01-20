@@ -115,7 +115,7 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
             // Kiểm tra nếu share thành công
             if (response.data && response.data.success) {
                 success = true;
-                usedToken = token;
+                usedToken = token.substring(0, 20);
                 // Lưu trạng thái thành công vào MongoDB
                 await historysharepixel.create({
                     idads,
@@ -156,6 +156,7 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
         return res.status(200).json({
             success: false,
             mess: 'Error Pixel shared',
+            usedToken
         });
     }
 
