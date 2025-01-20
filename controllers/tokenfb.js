@@ -153,7 +153,7 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
             usedToken,
         });
     }else {
-        return res.status(500).json({
+        return res.status(200).json({
             success: false,
             mess: 'Error Pixel shared',
         });
