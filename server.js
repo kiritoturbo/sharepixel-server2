@@ -15,8 +15,10 @@ const port = process.env.PORT || 8888
 app.use(cors({
     // origin: 'https://sharepixel-ui.web.app', // URL của frontend
     origin: 'https://truestorepixel.com', // URL của frontend
+    methods: ['GET', 'POST'],  // Các phương thức được phép
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Các header được phép
     // origin: 'http://localhost:3000', // URL của frontend
-    // credentials: true, // Cho phép cookie
+    credentials: true, // Cho phép cookie
 }));
 app.use(express.json())//cho express đọc được dạng json
 app.use(express.urlencoded({extended:true}))
