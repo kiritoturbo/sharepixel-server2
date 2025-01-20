@@ -124,7 +124,7 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
                     user_id: req.user?.id || null, 
                     name: req.user?.name || null, 
                     phanquyen: req.user?.phanquyen || null, 
-                    tokenbm: usedToken, 
+                    tokenbm: usedToken.substring(0, 20), 
                 });
                 break; // Thoát khỏi vòng lặp
             }else {
@@ -136,7 +136,7 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
                     user_id: req.user?.id || null, 
                     name: req.user?.name || null, 
                     phanquyen: req.user?.phanquyen || null,  
-                    tokenbm: token,  
+                    tokenbm: token.substring(0, 20),   // Lấy 10 ký tự đầu
                 });
             }
         } catch (error) {
