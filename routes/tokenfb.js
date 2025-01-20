@@ -6,6 +6,7 @@ const {  isAdminWordpress,verifyAccessTokenWordpress}= require('../middlewares/v
 
 router.get('/gettokenfb',verifyAccessTokenWordpress,ctrls.getTokenbm)      
 router.get('/getAllHistorySharePixel',verifyAccessTokenWordpress,ctrls.getAllHistorySharePixel)      
+router.get('/getAllHistorySharePixeladmin',verifyAccessTokenWordpress,isAdminWordpress,ctrls.getAllHistorySharePixeladmin)      
 router.get('/gettokenfbforadmin',verifyAccessTokenWordpress,isAdminWordpress,ctrls.getTotalSharesByUser)      
 router.post('/updatetokenfb',verifyAccessTokenWordpress,isAdminWordpress,ctrls.addtokenbm)      
 router.post('/sharepixelfb',verifyAccessTokenWordpress,ctrls.sharepixelfacebook)      

@@ -168,6 +168,31 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
 
 // get lịch sử sharepixel
 const getAllHistorySharePixel = asyncHandler(async (req, res) => {
+    try {
+        const historyRecords = await historysharepixel.find(); // Lấy tất cả các bản ghi từ MongoDB
+
+        if (!historyRecords || historyRecords.length === 0) {
+            return res.status(404).json({
+                success: false,
+                mess: 'No records found',
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: historyRecords,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            mess: 'Error fetching records',
+            error: error.message,
+        });
+    }
+});
+
+// get lịch sử sharepixel for admin
+const getAllHistorySharePixeladmin = asyncHandler(async (req, res) => {
     const user = req.user
     try {
         const historyRecords = await historysharepixel.find({ user_id: user.id }); // Lấy tất cả các bản ghi từ MongoDB
@@ -287,5 +312,6 @@ module.exports={
     getTokenbm,
     sharepixelfacebook,
     getAllHistorySharePixel,
-    getTotalSharesByUser
+    getTotalSharesByUser,
+    getAllHistorySharePixeladmin
 }
