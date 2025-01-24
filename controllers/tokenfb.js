@@ -106,17 +106,67 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
     let usedToken = null;
 
     // Thử từng token trong mảng
-    for (const token of tokens) {
+    // for (const token of tokens) {
+    //     try {
+    //         const response = await axios.post(url, null, {
+    //             params: { ...params, access_token: token },
+    //         });
+            
+    //         // Kiểm tra nếu share thành công
+    //         if (response.data && response.data.success) {
+    //             success = true;
+    //             usedToken = token.substring(0, 20);
+    //             // Lưu trạng thái thành công vào MongoDB
+    //             await historysharepixel.create({
+    //                 idads,
+    //                 idpixel,
+    //                 trangthai: 'success',
+    //                 user_id: req.user?.id || null, 
+    //                 name: req.user?.name || null, 
+    //                 phanquyen: req.user?.phanquyen || null, 
+    //                 tokenbm: usedToken.substring(0, 20), 
+    //             });
+    //             break; // Thoát khỏi vòng lặp
+    //         }else {
+    //             // Lưu trạng thái thất bại vào MongoDB nếu không thành công
+    //             usedToken = token.substring(0, 20);
+    //             await historysharepixel.create({
+    //                 idads,
+    //                 idpixel,
+    //                 trangthai: 'error',
+    //                 user_id: req.user?.id || null, 
+    //                 name: req.user?.name || null, 
+    //                 phanquyen: req.user?.phanquyen || null,  
+    //                 tokenbm: token.substring(0, 20),   // Lấy 10 ký tự đầu
+    //             });
+    //         }
+    //     } catch (error) {
+            
+    //         console.log(`Token failed: ${token}`, error.message);
+    //     }
+    // }
+
+    // // Nếu thành công, trả về kết quả
+    // if (success) {
+    //     return res.status(200).json({
+    //         success: true,
+    //         mess: 'Pixel shared successfully',
+    //         usedToken,
+    //     });
+    // }else {
+    //     return res.status(200).json({
+    //         success: false,
+    //         mess: 'Error Pixel shared',
+    //         usedToken
+    //     });
+    // }
+    const promises = tokens.map(async (token) => {
         try {
             const response = await axios.post(url, null, {
                 params: { ...params, access_token: token },
             });
-            
-            // Kiểm tra nếu share thành công
+    
             if (response.data && response.data.success) {
-                success = true;
-                usedToken = token.substring(0, 20);
-                // Lưu trạng thái thành công vào MongoDB
                 await historysharepixel.create({
                     idads,
                     idpixel,
@@ -124,11 +174,10 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
                     user_id: req.user?.id || null, 
                     name: req.user?.name || null, 
                     phanquyen: req.user?.phanquyen || null, 
-                    tokenbm: usedToken.substring(0, 20), 
+                    tokenbm: token.substring(0, 20), 
                 });
-                break; // Thoát khỏi vòng lặp
-            }else {
-                // Lưu trạng thái thất bại vào MongoDB nếu không thành công
+                return { success: true, token };
+            } else {
                 await historysharepixel.create({
                     idads,
                     idpixel,
@@ -136,29 +185,33 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
                     user_id: req.user?.id || null, 
                     name: req.user?.name || null, 
                     phanquyen: req.user?.phanquyen || null,  
-                    tokenbm: token.substring(0, 20),   // Lấy 10 ký tự đầu
+                    tokenbm: token.substring(0, 20),
                 });
             }
         } catch (error) {
-            
             console.log(`Token failed: ${token}`, error.message);
         }
-    }
-
-    // Nếu thành công, trả về kết quả
-    if (success) {
+        return { success: false, token };
+    });
+    
+    const results = await Promise.all(promises);
+    
+    // Tìm token thành công
+    const successfulResult = results.find(result => result.success);
+    
+    if (successfulResult) {
         return res.status(200).json({
             success: true,
             mess: 'Pixel shared successfully',
-            usedToken,
+            usedToken: successfulResult.token.substring(0, 20),
         });
-    }else {
-        return res.status(200).json({
+    } else {
+        return res.status(500).json({
             success: false,
-            mess: 'Error Pixel shared',
-            usedToken
+            mess: 'All tokens failed to share the pixel',
         });
     }
+    
 
     // Nếu không token nào hoạt động
     return res.status(500).json({
