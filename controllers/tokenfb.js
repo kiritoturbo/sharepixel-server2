@@ -2,6 +2,7 @@ const Tokenfb=require('../models/tokenfb')
 const historysharepixel=require('../models/historysharepx') 
 const asyncHandler=require('express-async-handler')
 const axios = require('axios');
+const moment = require('moment');
 
 
 const addtokenbm =asyncHandler(async (req,res) => {
@@ -223,8 +224,21 @@ const sharepixelfacebook =asyncHandler(async (req,res) => {
 // get lịch sử sharepixel
 const getAllHistorySharePixel = asyncHandler(async (req, res) => {
     const user = req.user
+    const { startDate, endDate } = req.query;
     try {
-        const historyRecords = await historysharepixel.find({ user_id: user.id }); // Lấy tất cả các bản ghi từ MongoDB
+        let filter = { user_id: user.id }; // Mặc định không lọc theo ngày
+
+        // Nếu có startDate và endDate, ta sẽ lọc theo khoảng thời gian
+        if (startDate && endDate) {
+            // Chuyển đổi startDate và endDate sang thời gian UTC-7 nếu cần thiết
+            const start = moment(startDate).startOf('day').utcOffset(-7, true).toDate(); // Convert startDate
+            const end = moment(endDate).endOf('day').utcOffset(-7, true).toDate(); // Convert endDate
+
+            // Thêm điều kiện lọc theo ngày
+            filter.createdAt = { $gte: start, $lte: end }; // Lọc theo ngày (createdAt nằm trong khoảng từ startDate đến endDate)
+        }
+        // const historyRecords = await historysharepixel.find({ user_id: user.id }); // Lấy tất cả các bản ghi từ MongoDB
+        const historyRecords = await historysharepixel.find(filter); 
 
         if (!historyRecords || historyRecords.length === 0) {
             return res.status(404).json({
@@ -249,8 +263,20 @@ const getAllHistorySharePixel = asyncHandler(async (req, res) => {
 // get lịch sử sharepixel for admin
 const getAllHistorySharePixeladmin = asyncHandler(async (req, res) => {
     const user = req.user
+    const { startDate, endDate } = req.query;
     try {
-        const historyRecords = await historysharepixel.find(); // Lấy tất cả các bản ghi từ MongoDB
+        let filter = {}; // Mặc định không lọc theo ngày
+
+        // Nếu có startDate và endDate, ta sẽ lọc theo khoảng thời gian
+        if (startDate && endDate) {
+            // Chuyển đổi startDate và endDate sang thời gian UTC-7 nếu cần thiết
+            const start = moment(startDate).startOf('day').utcOffset(-7, true).toDate(); // Convert startDate
+            const end = moment(endDate).endOf('day').utcOffset(-7, true).toDate(); // Convert endDate
+
+            // Thêm điều kiện lọc theo ngày
+            filter.createdAt = { $gte: start, $lte: end }; // Lọc theo ngày (createdAt nằm trong khoảng từ startDate đến endDate)
+        }
+        const historyRecords = await historysharepixel.find(filter); // Lấy tất cả các bản ghi từ MongoDB
 
         if (!historyRecords || historyRecords.length === 0) {
             return res.status(404).json({
